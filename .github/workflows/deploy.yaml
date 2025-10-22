@@ -1,0 +1,35 @@
+# 🧾 Tên workflow hiển thị trong tab "Actions" trên GitHub
+name: Deploy to GitHub Pages
+
+# ⚙️ Khi nào workflow chạy
+on:
+  push:                  # Kích hoạt khi có "push"
+    branches: ["main"]   # ... vào nhánh main
+  workflow_dispatch:     # Cho phép chạy thủ công trong tab Actions
+
+# 🔐 Phân quyền cho workflow
+permissions:
+  contents: write  # Cho phép ghi vào repo (cần thiết để đẩy lên branch gh-pages)
+
+# 💼 Định nghĩa các "job" (công việc) của workflow
+jobs:
+  deploy:                # Tên job
+    runs-on: ubuntu-latest  # Chạy trên máy ảo Ubuntu miễn phí do GitHub cung cấp
+
+    # 🪜 Các bước sẽ chạy lần lượt
+    steps:
+      # B1️⃣: Lấy mã nguồn của repo về môi trường chạy
+      - name: Checkout source code
+        uses: actions/checkout@v4  # Action chính thức của GitHub để clone repo
+
+      # B2️⃣: (Tùy chọn) Build nội dung tĩnh của website
+      # Ở đây chỉ in ra thông báo. Nếu bạn dùng React/Vite thì thay bằng npm build.
+      - name: Build static content
+        run: echo "✅ Build completed successfully!"
+
+      # B3️⃣: Deploy nội dung lên GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3  # Action chuyên dụng để deploy Pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Token tự động cấp để đẩy branch
+          publish_dir: ./  # Thư mục chứa file HTML (ở đây là thư mục gốc)
